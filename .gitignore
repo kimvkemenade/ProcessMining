@@ -2,3 +2,7 @@ venv/
 
 .venv
 .xes
+.csv
+.png
+.xlsx
+.pdf

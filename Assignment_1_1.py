@@ -82,7 +82,7 @@ def compute_distance(matrix, metric = 'minkowski', minkowski_p = 2):
     else:
         raise ValueError('Unsupported metric')
 
-    return weights.iloc[:5, :5]
+    return weights
 
 def build_network(weights, measure_preference = 'similarity', threshold_value = 0.6):
     use_similarity = (measure_preference == 'similarity')
@@ -112,7 +112,9 @@ def build_network(weights, measure_preference = 'similarity', threshold_value = 
     nx.draw_networkx_edges(G, pos, width=edge_w, alpha=0.7)
     nx.draw_networkx_labels(G, pos, font_size=8)
     plt.axis('off')
-    return plt.show()
+    plt.show()
+    return G
+
 
 def main(XES_PATH, metric = 'minkowski', minkowski_p = 2, measure_preference = 'similarity', threshold_value = 0.6):
     """Main function to execute the steps.
@@ -126,5 +128,8 @@ def main(XES_PATH, metric = 'minkowski', minkowski_p = 2, measure_preference = '
     df = convert_to_df(log)
     counts = create_counts(df)
     matrix = compute_distance(counts, metric, minkowski_p)
-    build_network(matrix, measure_preference, threshold_value)
-    return "Process completed."
+    G = build_network(matrix, measure_preference, threshold_value)
+
+    print("Process Completed")
+    return G 
+

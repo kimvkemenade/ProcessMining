@@ -69,33 +69,6 @@ def create_resource_activity_matrix(log):
     
     return matrix, df
 
-def compute_handover_matrix(df):
-    """Compute handover matrix from event log"""
-    if 'timestamp' not in df.columns:
-        return None
-    
-    df = df.sort_values(['case_id', 'timestamp'])
-    
-    handovers = []
-    for case_id, group in df.groupby('case_id'):
-        resources = group['resource'].tolist()
-        for i in range(len(resources) - 1):
-            handovers.append({'from': resources[i], 'to': resources[i+1], 'case_id': case_id})
-    
-    if not handovers:
-        return None
-    
-    handover_df = pd.DataFrame(handovers)
-    handover_counts = handover_df.groupby(['from', 'to', 'case_id']).size().reset_index(name='count')
-    handover_mean = handover_counts.groupby(['from', 'to'])['count'].mean().reset_index(name='mean_per_case')
-    
-    all_resources = sorted(set(handover_mean['from'].unique()) | set(handover_mean['to'].unique()))
-    handover_matrix = pd.DataFrame(0.0, index=all_resources, columns=all_resources)
-    
-    for _, row in handover_mean.iterrows():
-        handover_matrix.at[row['from'], row['to']] = row['mean_per_case']
-    
-    return handover_matrix
 
 def compute_similarity_weights(matrix, metric='cosine_distance', minkowski_p=2):
     """Compute pairwise similarity/distance weights"""
@@ -249,7 +222,9 @@ if uploaded_file is not None:
                 st.stop()
             
             matrix, df = create_resource_activity_matrix(log)
-            handover_matrix = compute_handover_matrix(df)
+            handover_df = pd.read_csv('outputs_task_similarity_nb/handover_matrix.csv')
+            handover_df = handover_df.set_index('Unnamed: 0')
+            handover_matrix = handover_df
             
             st.session_state.matrix = matrix
             st.session_state.df = df

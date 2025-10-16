@@ -192,8 +192,8 @@ def plot_clustered_network(G, cluster_labels, resource_list, title):
     
     node_colors = [resource_cluster.get(node, 0) for node in G.nodes()]
     
-    nx.draw(G, pos, with_labels=True, node_color=node_colors, 
-            cmap=plt.cm.jet, node_size=300, font_size=8, 
+    nx.draw(G, pos, with_labels=False, node_color=node_colors, 
+            cmap=plt.cm.jet, node_size=150, font_size=8, 
             font_color='black', ax=ax)
     
     ax.set_title(title, fontsize=14, fontweight='bold')
@@ -221,23 +221,22 @@ if uploaded_file is not None:
                 st.error("Failed to load XES file")
                 st.stop()
             
-            matrix, df = create_resource_activity_matrix(log)
+            resource_df = pd.read_csv("outputs_task_similarity_nb/resource_activity_mean_per_case.csv")
+            resource_df = resource_df.set_index('resource')
             handover_df = pd.read_csv('outputs_task_similarity_nb/handover_matrix.csv')
             handover_df = handover_df.set_index('Unnamed: 0')
             handover_matrix = handover_df
             
-            st.session_state.matrix = matrix
-            st.session_state.df = df
+            st.session_state.matrix = resource_df
             st.session_state.handover_matrix = handover_matrix
             st.session_state.file_loaded = True
             
-        st.sidebar.success(f"✅ Loaded {len(matrix)} resources and {len(matrix.columns)} activities")
+        st.sidebar.success(f"✅ Loaded {len(resource_df)} resources and {len(resource_df.columns)} activities")
         st.rerun()
 
 # Main content - only show if file is loaded
 if st.session_state.file_loaded and st.session_state.matrix is not None:
     matrix = st.session_state.matrix
-    df = st.session_state.df
     handover_matrix = st.session_state.handover_matrix
     
     st.sidebar.success(f"✅ {len(matrix)} resources, {len(matrix.columns)} activities")
@@ -269,7 +268,7 @@ if st.session_state.file_loaded and st.session_state.matrix is not None:
             
             threshold = st.slider(
                 f"Edge Threshold ({'similarity' if use_similarity else 'distance'})",
-                0.0, 1.0, 0.85 if metric == 'cosine_distance' else 0.6,
+                0.0, 20.0, 0.85 if metric == 'cosine_distance' else 0.6,
                 0.01,
                 help="Minimum weight for edges to appear in network"
             )
@@ -339,7 +338,7 @@ if st.session_state.file_loaded and st.session_state.matrix is not None:
                     0.0, 
                     float(handover_matrix.max().max()),
                     0.001,
-                    0.001,
+                    0.0005,
                     help="Minimum handover frequency to show edge"
                 )
                 

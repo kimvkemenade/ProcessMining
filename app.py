@@ -208,34 +208,34 @@ st.markdown("Analyze resource behavior patterns using activity profiles and hand
 # Sidebar configuration
 st.sidebar.header("⚙️ Configuration")
 
-uploaded_file = st.sidebar.file_uploader("Upload XES File", type=['xes'])
+# uploaded_file = st.sidebar.file_uploader("Upload XES File", type=['xes'])
 
-# Load button
-if uploaded_file is not None:
-    load_button = st.sidebar.button("🚀 Load and Process File", type="primary", use_container_width=True)
+# # Load button
+# if uploaded_file is not None:
+#     load_button = st.sidebar.button("🚀 Load and Process File", type="primary", use_container_width=True)
     
-    if load_button:
-        with st.spinner("Loading XES file..."):
-            log = load_xes_file(uploaded_file)
-            if log is None:
-                st.error("Failed to load XES file")
-                st.stop()
+#     if load_button:
+#         with st.spinner("Loading XES file..."):
+#             log = load_xes_file(uploaded_file)
+#             if log is None:
+#                 st.error("Failed to load XES file")
+#                 st.stop()
             
-            resource_df = pd.read_csv("outputs_task_similarity_nb/resource_activity_mean_per_case.csv")
-            resource_df = resource_df.set_index('resource')
-            handover_df = pd.read_csv('outputs_task_similarity_nb/handover_matrix.csv')
-            handover_df = handover_df.set_index('Unnamed: 0')
-            handover_matrix = handover_df
+resource_df = pd.read_csv("outputs_task_similarity_nb/resource_activity_mean_per_case.csv")
+resource_df = resource_df.set_index('resource')
+handover_df = pd.read_csv('outputs_task_similarity_nb/handover_matrix.csv')
+handover_df = handover_df.set_index('Unnamed: 0')
+handover_matrix = handover_df
+
+st.session_state.matrix = resource_df
+st.session_state.handover_matrix = handover_matrix
+st.session_state.file_loaded = True
             
-            st.session_state.matrix = resource_df
-            st.session_state.handover_matrix = handover_matrix
-            st.session_state.file_loaded = True
-            
-        st.sidebar.success(f"✅ Loaded {len(resource_df)} resources and {len(resource_df.columns)} activities")
-        st.rerun()
+        # st.sidebar.success(f"✅ Loaded {len(resource_df)} resources and {len(resource_df.columns)} activities")
+        # st.rerun()
 
 # Main content - only show if file is loaded
-if st.session_state.file_loaded and st.session_state.matrix is not None:
+if st.session_state.handover_matrix is not None and st.session_state.matrix is not None:
     matrix = st.session_state.matrix
     handover_matrix = st.session_state.handover_matrix
     

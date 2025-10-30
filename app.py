@@ -23,51 +23,6 @@ if 'handover_matrix' not in st.session_state:
 if 'file_loaded' not in st.session_state:
     st.session_state.file_loaded = False
 
-# Helper functions
-def load_xes_file(uploaded_file):
-    """Load XES file with fallback mechanisms"""
-    with open("temp.xes", "wb") as f:
-        f.write(uploaded_file.getbuffer())
-    
-    log = None
-    for variant in (None, 'iterparse', 'etree'):
-        try:
-            if variant is None:
-                log = pm4py.read_xes("temp.xes")
-            else:
-                log = pm4py.read_xes("temp.xes", variant=variant)
-            break
-        except Exception as e:
-            continue
-    
-    os.remove("temp.xes")
-    return log
-
-def create_resource_activity_matrix(log):
-    """Convert log to resource-activity matrix"""
-    df = log_converter.apply(log, variant=log_converter.Variants.TO_DATA_FRAME)
-    
-    col_map = {
-        'case:concept:name': 'case_id',
-        'concept:name': 'activity',
-        'org:resource': 'resource',
-        'time:timestamp': 'timestamp'
-    }
-    for old, new in col_map.items():
-        if old in df.columns:
-            df = df.rename(columns={old: new})
-    
-    use_cols = ['case_id', 'activity', 'resource']
-    if 'timestamp' in df.columns:
-        use_cols.append('timestamp')
-    
-    df = df[use_cols].dropna(subset=['case_id','activity','resource']).copy()
-    
-    counts = df.groupby(['resource','activity','case_id']).size().rename('count').reset_index()
-    mean_per_case = counts.groupby(['resource','activity'])['count'].mean().rename('mean_per_case').reset_index()
-    matrix = mean_per_case.pivot(index='resource', columns='activity', values='mean_per_case').fillna(0.0)
-    
-    return matrix, df
 
 
 def compute_similarity_weights(matrix, metric='cosine_distance', minkowski_p=2):
@@ -112,58 +67,6 @@ def build_network(weights, threshold_value, use_similarity=False):
     
     return G
 
-def handover_network_from_matrix(
-    handover_df: pd.DataFrame,
-    threshold: float = 0.0,
-    directed: bool = True,
-    show_unconnected_nodes: bool = False
-) -> nx.Graph | nx.DiGraph:
-    """
-    Create a NetworkX graph from a handover DataFrame.
-    Only edges with weight >= threshold are included.
-
-    Parameters
-    ----------
-    handover_df : pandas.DataFrame
-        index and columns are resource names; values are mean handovers per case
-    threshold : float
-        Minimum edge weight to keep
-    directed : bool
-        If False, returns an undirected graph (weight = mean of both directions)
-    show_unconnected_nodes : bool
-        If True, nodes without meaningful edges are included.
-
-    Returns
-    -------
-    G : networkx.DiGraph or Graph
-    """
-    G = nx.DiGraph() if directed else nx.Graph()
-
-    if directed:
-        for src in handover_df.index:
-            for dst in handover_df.columns:
-                w = handover_df.at[src, dst]
-                if w >= threshold and w > 0:
-                    G.add_edge(src, dst, weight=float(w))
-        if show_unconnected_nodes:
-            for node in handover_df.index:
-                G.add_node(node)
-    else:
-        visited = set()
-        for a in handover_df.index:
-            for b in handover_df.columns:
-                if (a, b) in visited or (b, a) in visited:
-                    continue
-                w = (handover_df.at[a, b] + handover_df.at[b, a]) / 2.0
-                if w >= threshold and w > 0:
-                    G.add_edge(a, b, weight=float(w))
-                visited.add((a, b))
-        if show_unconnected_nodes:
-            for node in handover_df.index:
-                G.add_node(node)
-
-    return G
-
 def plot_elbow_curve(data, max_k=10):
     """Plot elbow curve for K-means"""
     inertias = []
@@ -204,22 +107,6 @@ def plot_clustered_network(G, cluster_labels, resource_list, title):
 # Streamlit UI
 st.title("🔍 Resource Clustering Analysis")
 st.markdown("Analyze resource behavior patterns using activity profiles and handover matrices")
-
-# Sidebar configuration
-st.sidebar.header("⚙️ Configuration")
-
-# uploaded_file = st.sidebar.file_uploader("Upload XES File", type=['xes'])
-
-# # Load button
-# if uploaded_file is not None:
-#     load_button = st.sidebar.button("🚀 Load and Process File", type="primary", use_container_width=True)
-    
-#     if load_button:
-#         with st.spinner("Loading XES file..."):
-#             log = load_xes_file(uploaded_file)
-#             if log is None:
-#                 st.error("Failed to load XES file")
-#                 st.stop()
             
 resource_df = pd.read_csv("outputs_task_similarity_nb/resource_activity_mean_per_case.csv")
 resource_df = resource_df.set_index('resource')
@@ -231,8 +118,6 @@ st.session_state.matrix = resource_df
 st.session_state.handover_matrix = handover_matrix
 st.session_state.file_loaded = True
             
-        # st.sidebar.success(f"✅ Loaded {len(resource_df)} resources and {len(resource_df.columns)} activities")
-        # st.rerun()
 
 # Main content - only show if file is loaded
 if st.session_state.handover_matrix is not None and st.session_state.matrix is not None:
@@ -412,14 +297,4 @@ if st.session_state.handover_matrix is not None and st.session_state.matrix is n
             st.warning("⚠️ Handover matrix could not be computed. Timestamp data may be missing.")
 
 else:
-    st.info("👈 Please upload an XES file and click 'Load and Process File' to begin analysis")
-    
-    st.markdown("""
-    ### Features:
-    - **Resource Activity Analysis**: Cluster resources based on activity patterns
-    - **Handover Matrix Analysis**: Cluster resources based on work handover patterns
-    - **Multiple Metrics**: Cosine, Euclidean, Minkowski, Hamming, Pearson
-    - **Clustering Methods**: K-Means and Hierarchical clustering
-    - **Elbow Method**: Find optimal number of clusters
-    - **Interactive Visualization**: Adjust thresholds and parameters in real-time
-    """)
+    pass

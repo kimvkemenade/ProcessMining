@@ -10,6 +10,9 @@ import pm4py
 from pm4py.objects.conversion.log import converter as log_converter
 import os
 import io
+from part2_functions_raw import compute_handover_matrix, handover_network_from_matrix, extract_parallel_pairs, event_log
+from pm4py.objects.process_tree.obj import Operator
+from pm4py.visualization.petri_net import visualizer as pn_visualizer
 
 st.set_page_config(page_title="Resource Clustering Analysis", layout="wide")
 
@@ -127,7 +130,7 @@ if st.session_state.handover_matrix is not None and st.session_state.matrix is n
     st.sidebar.success(f"✅ {len(matrix)} resources, {len(matrix.columns)} activities")
     
     # Tabs for different analyses
-    tab1, tab2 = st.tabs(["📊 Resource Activity Analysis", "🔄 Handover Matrix Analysis"])
+    tab1, tab2, tab3 = st.tabs(["📊 Resource Activity Analysis", "🔄 Handover Matrix Analysis", "📈 Process Mining Analysis"])
     
     # Tab 1: Resource Activity Analysis
     with tab1:
@@ -295,6 +298,57 @@ if st.session_state.handover_matrix is not None and st.session_state.matrix is n
             st.bar_chart(ho_cluster_dist)
         else:
             st.warning("⚠️ Handover matrix could not be computed. Timestamp data may be missing.")
+    # Tab 3: Process Mining Analysis
+    with tab3:
+        st.header("Process Mining Evaluation")
+
+        # Discover process model
+        model_type = st.radio("Choose Discovery Algorithm", ["Inductive Miner", "Alpha Miner"])
+        if model_type == "Inductive Miner":
+            net, im, fm = pm4py.discover_petri_net_inductive(event_log)
+        else:
+             net, im, fm = pm4py.discover_petri_net_alpha(event_log)
+
+        try:
+
+            st.subheader("Discovered Petri Net")
+            gviz = pn_visualizer.apply(net, im, fm)
+            png_bytes = gviz.pipe(format='png')
+            st.image(png_bytes, use_container_width=True)
+        except Exception as e:
+            st.error(f"Could not render Petri net: {e}")
+
+        st.subheader("Parallel Activities Detection")
+        tree = pm4py.discover_process_tree_inductive(event_log)
+        parallel_pairs = extract_parallel_pairs(tree)
+        st.write(f"Detected parallel pairs: {len(parallel_pairs)}")
+        st.dataframe([list(p) for p in parallel_pairs])
+
+        st.subheader("Handover Matrix from Log")
+        log_df = pm4py.convert_to_dataframe(event_log)
+        ho_df, total_counts = compute_handover_matrix(
+            log_df,
+            case_col="case:concept:name",
+            activity_col="concept:name",
+            resource_col="org:resource",
+            timestamp_col="time:timestamp",
+            parallel_pairs=parallel_pairs
+        )
+        st.dataframe(ho_df)
+
+        threshold = st.slider("Network Threshold", 0.0, float(ho_df.values.max()), 0.001, 0.0001, format="%.4f")
+
+        show_unconnected = st.checkbox("Show unconnected nodes", value=False)
+
+        G = handover_network_from_matrix(ho_df, threshold=threshold, show_unconnected_nodes=show_unconnected)
+        st.metric("Network Nodes", G.number_of_nodes())
+        st.metric("Network Edges", G.number_of_edges())
+
+        st.subheader("Network Visualization")
+        fig, ax = plt.subplots(figsize=(8, 6))
+        pos = nx.spring_layout(G, seed=42)
+        nx.draw(G, pos, with_labels=True, node_size=200, font_size=8, ax=ax)
+        st.pyplot(fig)
 
 else:
     pass

@@ -1,0 +1,32 @@
+# Configuration file for Social Network Mining Assignment
+
+# Dataset configuration
+dataset:
+  xes_file: "BPI2017Denied(3).xes"  # Path to your XES event log file
+
+# Resource Similarity Network configuration
+resource_similarity:
+  metric: "hamming"  # Options: 'minkowski', 'hamming', 'pearson'
+  minkowski_p: 2  # Only used if metric is 'minkowski'
+  threshold: 0.4  # Threshold for filtering weak connections (lower values = more similar)
+
+# Handover Network configuration
+handover:
+  threshold: 0.0003  # Threshold for filtering weak connections
+  directed: true  # Whether to create directed graph
+
+# Clustering configuration
+clustering:
+  algorithm: "kmeans"  # Options: 'kmeans', 'hierarchical'
+  n_clusters: 6  # Number of clusters (used if not using elbow method)
+  use_elbow_method: true  # If true, shows elbow plot to help choose k
+  linkage: "ward"  # Only used for hierarchical clustering: 'ward'
+  
+  # Which data to cluster
+  cluster_on: "handover"  # Options: 'handover', 'resources'
+
+# Visualization configuration
+visualization:
+  show_plots: true  # Whether to display plots
+  save_plots: false  # Whether to save plots to files
+  output_dir: "output"  # Directory to save output files

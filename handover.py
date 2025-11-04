@@ -71,19 +71,17 @@ class Handover:
             node = self.process_tree
         
         pairs = set()
-        
-        # If this node is a parallel operator, all pairs of activities from different branches are parallel
+    
+        # Safe check for parallel operator
         if hasattr(node, 'operator') and node.operator == Operator.PARALLEL:
-            children_activities = [self.get_leaf_activities(child) for child in node.children]
-            
-            # Create pairs between activities from different branches
-            for i in range(len(children_activities)):
-                for j in range(i + 1, len(children_activities)):
-                    for act_i in children_activities[i]:
-                        for act_j in children_activities[j]:
-                            pairs.add(frozenset([act_i, act_j]))
+            children_sets = [self.get_leaf_activities(c) for c in node.children]
+            for i in range(len(children_sets)):
+                for j in range(i+1, len(children_sets)):
+                    for a in children_sets[i]:
+                        for b in children_sets[j]:
+                            pairs.add(frozenset([a, b]))
         
-        # Recursively process children
+        # Safe check for children before recursing
         if hasattr(node, 'children') and node.children:
             for child in node.children:
                 pairs |= self.extract_parallel_pairs(child)

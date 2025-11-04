@@ -43,7 +43,7 @@ class Clustering:
         k_values = list(k_range)
         
         for k in k_values:
-            kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+            kmeans = KMeans(n_clusters=k, random_state=42, n_init=15)
             kmeans.fit(data.values)
             inertias.append(kmeans.inertia_)
         

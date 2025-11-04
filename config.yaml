@@ -12,18 +12,18 @@ resource_similarity:
 
 # Handover Network configuration
 handover:
-  threshold: 0.0003  # Threshold for filtering weak connections
+  threshold: 0.0001  # Threshold for filtering weak connections
   directed: true  # Whether to create directed graph
 
 # Clustering configuration
 clustering:
   algorithm: "kmeans"  # Options: 'kmeans', 'hierarchical'
-  n_clusters: 6  # Number of clusters (used if not using elbow method)
+  n_clusters: 4  # Number of clusters (used if not using elbow method)
   use_elbow_method: true  # If true, shows elbow plot to help choose k
   linkage: "ward"  # Only used for hierarchical clustering: 'ward'
   
   # Which data to cluster
-  cluster_on: "handover"  # Options: 'handover', 'resources'
+  cluster_on: "resources"  # Options: 'handover', 'resources'
 
 # Visualization configuration
 visualization:

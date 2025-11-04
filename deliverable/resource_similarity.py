@@ -53,7 +53,7 @@ class ResourceSimilarity:
         ).fillna(0.0)
         
         self.matrix = matrix
-        print(f"✓ Resource-activity matrix created: {matrix.shape[0]} resources × {matrix.shape[1]} activities")
+        print(f"Resource-activity matrix created: {matrix.shape[0]} resources × {matrix.shape[1]} activities")
         return matrix
     
     def compute_distance(self, metric='minkowski', minkowski_p=2):
@@ -109,7 +109,7 @@ class ResourceSimilarity:
             raise ValueError(f'Unsupported metric: {metric}. Use "minkowski", "hamming", or "pearson"')
 
         self.distance_matrix = distance_df
-        print(f"✓ Distance matrix computed using {metric} metric")
+        print(f"Distance matrix computed using {metric} metric")
         return distance_df
     
     def build_network(self, threshold=0.4):
@@ -142,7 +142,7 @@ class ResourceSimilarity:
                 if distance <= threshold:
                     G.add_edge(u, v, weight=distance)
 
-        print(f"✓ Resource similarity network: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
+        print(f"Resource similarity network: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
         return G
     
     def plot_network(self, G, output_path=None):
@@ -167,6 +167,6 @@ class ResourceSimilarity:
         
         if output_path:
             plt.savefig(output_path, dpi=300, bbox_inches='tight')
-            print(f"✓ Network plot saved to {output_path}")
+            print(f"Network plot saved to {output_path}")
         
         plt.show()

@@ -101,7 +101,7 @@ def main(config_path='config.yaml'):
     if config['visualization']['save_plots']:
         matrix_path = os.path.join(output_dir, 'handover_matrix.csv')
         handover_matrix.to_csv(matrix_path)
-        print(f"✓ Handover matrix saved to {matrix_path}")
+        print(f"Handover matrix saved to {matrix_path}")
     
     # Build handover network
     handover_threshold = config['handover']['threshold']

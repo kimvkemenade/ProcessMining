@@ -28,7 +28,7 @@ class DataSet:
             EventLog: PM4Py event log object
         """
         self.log = pm4py.read_xes(self.xes_file_path)
-        print(f"✓ Log imported with {len(self.log)} traces.")
+        print(f"Log imported with {len(self.log)} traces.")
         return self.log
 
     def convert_to_df(self):
@@ -67,5 +67,5 @@ class DataSet:
         df = df[use_cols].dropna(subset=['case_id', 'activity', 'resource']).copy()
         
         self.df = df
-        print(f"✓ DataFrame created with {len(df)} events")
+        print(f"DataFrame created with {len(df)} events")
         return df

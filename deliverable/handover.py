@@ -32,7 +32,7 @@ class Handover:
             ProcessTree: Discovered process tree
         """
         self.process_tree = pm4py.discover_process_tree_inductive(self.log)
-        print("✓ Process tree discovered using inductive miner")
+        print("Process tree discovered using inductive miner")
         return self.process_tree
 
     def get_leaf_activities(self, node):
@@ -245,6 +245,6 @@ class Handover:
         
         if output_path:
             plt.savefig(output_path, dpi=300, bbox_inches='tight')
-            print(f"✓ Network plot saved to {output_path}")
+            print(f"Network plot saved to {output_path}")
         
         plt.show()

@@ -78,7 +78,7 @@ class Clustering:
         
         # Print cluster distribution
         unique, counts = np.unique(clusters, return_counts=True)
-        print(f"\n✓ K-means clustering (k={n_clusters}) on {data_type} data:")
+        print(f"K-means clustering (k={n_clusters}) on {data_type} data:")
         for cluster_id, count in zip(unique, counts):
             print(f"  Cluster {cluster_id}: {count} resources")
         
@@ -103,7 +103,7 @@ class Clustering:
         
         # Print cluster distribution
         unique, counts = np.unique(clusters, return_counts=True)
-        print(f"\n✓ Hierarchical clustering (k={n_clusters}, linkage={linkage}) on {data_type} data:")
+        print(f"Hierarchical clustering (k={n_clusters}, linkage={linkage}) on {data_type} data:")
         for cluster_id, count in zip(unique, counts):
             print(f"  Cluster {cluster_id}: {count} resources")
         
@@ -204,7 +204,7 @@ class Clustering:
         
         if output_path:
             plt.savefig(output_path, dpi=300, bbox_inches='tight')
-            print(f"✓ Clustered network plot saved to {output_path}")
+            print(f"Clustered network plot saved to {output_path}")
         
         plt.show()
         

@@ -26,7 +26,7 @@ class Clustering:
         self.handover_matrix = handover_matrix
         self.handover_graph = handover_graph
 
-    def elbow_method(self, data_type='handover', k_range=range(2, 11)):
+    def elbow_method(self, data_type='handover', k_range=range(2, 16)):
         """
         Compute and plot elbow method to help determine optimal number of clusters.
         

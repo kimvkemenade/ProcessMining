@@ -203,7 +203,7 @@ def handover_network_from_matrix(
     return G
 
 
-# Get network with threshold 0.02 mean handovers per case
+# Get network with threshold 0.001 mean handovers per case
 G = handover_network_from_matrix(handover_df, threshold=0.001, show_unconnected_nodes=False)
 
 

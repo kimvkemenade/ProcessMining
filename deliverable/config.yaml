@@ -18,8 +18,8 @@ handover:
 # Clustering configuration
 clustering:
   algorithm: "kmeans"  # Options: 'kmeans', 'hierarchical'
-  n_clusters: 4  # Number of clusters (used if not using elbow method)
-  use_elbow_method: true  # If true, shows elbow plot to help choose k
+  n_clusters: 6  # Number of clusters (used if not using elbow method)
+  use_elbow_method: false  # If true, shows elbow plot to help choose k
   linkage: "ward"  # Only used for hierarchical clustering: 'ward'
   
   # Which data to cluster

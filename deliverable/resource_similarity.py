@@ -154,7 +154,7 @@ class ResourceSimilarity:
             output_path (str, optional): Path to save figure
         """
         plt.figure(figsize=(12, 10))
-        pos = nx.spring_layout(G, seed=42, k=0.5)
+        pos = nx.spring_layout(G, seed=42)
         
         # Draw network
         nx.draw_networkx_nodes(G, pos, node_size=500, node_color='#4C78A8', alpha=0.9)

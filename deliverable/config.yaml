@@ -23,7 +23,7 @@ clustering:
   linkage: "ward"  # Only used for hierarchical clustering: 'ward'
   
   # Which data to cluster
-  cluster_on: "resources"  # Options: 'handover', 'resources'
+  cluster_on: "handover"  # Options: 'handover', 'resources'
 
 # Visualization configuration
 visualization:

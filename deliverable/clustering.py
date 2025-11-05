@@ -148,8 +148,13 @@ class Clustering:
             for src in matrix.index:
                 for dst in matrix.columns:
                     w = matrix.at[src, dst]
-                    if w >= threshold and w > 0:
-                        G.add_edge(src, dst, weight=float(w))
+                    if data_type == 'handover':
+                        if w >= threshold and w > 0:
+                            G.add_edge(src, dst, weight=float(w))
+                    if data_type == 'resources':
+                        if w <= threshold and w > 0:
+                            G.add_edge(src, dst, weight=float(w))
+
             if show_unconnected:
                 for node in matrix.index:
                     G.add_node(node)
@@ -160,8 +165,12 @@ class Clustering:
                     if (a, b) in visited or (b, a) in visited:
                         continue
                     w = (matrix.at[a, b] + matrix.at[b, a]) / 2.0
-                    if w >= threshold and w > 0:
-                        G.add_edge(a, b, weight=float(w))
+                    if data_type == 'handover':
+                        if w >= threshold and w > 0:
+                            G.add_edge(a, b, weight=float(w))
+                    if data_type == 'resources':
+                        if w <= threshold and w > 0:
+                            G.add_edge(a, b, weight=float(w))
                     visited.add((a, b))
             if show_unconnected:
                 for node in matrix.index:
@@ -172,7 +181,7 @@ class Clustering:
         
         # Plot
         plt.figure(figsize=(14, 10))
-        pos = nx.spring_layout(G, seed=42, k=0.5)
+        pos = nx.spring_layout(G, seed=42)
         edge_weights = [G[u][v]['weight'] for u, v in G.edges()]
         
         # Draw nodes colored by cluster

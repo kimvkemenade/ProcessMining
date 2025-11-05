@@ -167,7 +167,7 @@ class Handover:
         self.handover_matrix = handover_df
         return handover_df, total_counts
 
-    def build_network(self, threshold=0.0001, directed=True, show_unconnected=False):
+    def build_network(self, threshold=0.0002, directed=True, show_unconnected=False):
         """
         Build handover network from handover matrix.
         
@@ -222,7 +222,7 @@ class Handover:
             output_path (str, optional): Path to save figure
         """
         plt.figure(figsize=(12, 10))
-        pos = nx.spring_layout(G, seed=42, k=0.5)
+        pos = nx.spring_layout(G, seed=42,)
         
         # Get edge weights for visualization
         edge_weights = [G[u][v]['weight'] for u, v in G.edges()]

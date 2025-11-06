@@ -205,37 +205,6 @@ clustering:
 ```
 Run: `python main.py`
 
-### Example 4: Compare Different Distance Metrics
-Create multiple config files (config_hamming.yaml, config_pearson.yaml) with different metrics, then run:
-```bash
-python main.py --config config_hamming.yaml
-python main.py --config config_pearson.yaml
-```
-
-## Evaluation
-
-The assignment requires evaluation using precision and recall against a gold standard. To implement this:
-
-1. **Create gold standard**: Manually label expected clusters or relationships
-2. **Compute metrics**:
-   - **Precision**: Proportion of discovered relationships that are correct
-   - **Recall**: Proportion of true relationships that were discovered
-   - **F1-score**: Harmonic mean of precision and recall
-
-3. **Compare**: Network edges, cluster assignments against ground truth
-
-Example evaluation code structure:
-```python
-def evaluate_clusters(predicted_clusters, gold_standard):
-    # Compare cluster assignments
-    # Compute precision, recall, F1
-    pass
-
-def evaluate_network(predicted_edges, gold_standard_edges):
-    # Compare edge sets
-    # Compute precision, recall
-    pass
-```
 
 ## Troubleshooting
 
